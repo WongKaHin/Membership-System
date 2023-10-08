@@ -1,0 +1,587 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>點數中心</title>
+        <link rel="icon" type="image/x-icon" href="{%static 'images/favicon.ico'%}" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{%static 'css/point.css'%}" rel="stylesheet" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://kit.fontawesome.com/a72c89a734.js" crossorigin="anonymous"></script>
+    </head>
+    <body id="page-top">
+        <a href="/" class="home" id="home"><i class="fa-solid fa-house" style="font-size:30px;color:#00AA00;"></i></a>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top" id="sideNav" >
+        
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">
+                <span class="d-block d-lg-none">點數中心</span>
+                {%if account.pic == 'None'%}
+                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="{%static 'images/user.png'%}" alt="..." /></span>
+                {%else%}
+                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="{{account.pic}}" alt="..." /></span>
+                {%endif%}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive" >
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">點數兌換</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#experience">兌換紀錄</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger">剩餘點數:{{account.point}}</a></li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Page Content-->
+        <div class="container-fluid p-0">
+            <!-- 點數兌換-->
+            {% block body_block %}
+            <section class="resume-section" id="about">
+                <div class="resume-section-content">
+                    <h3 class="mb-0">點數兌換</h3>
+                    <br>
+                    
+                    
+                    <div class="subheading mb-5">
+                        <!-- 瑪莎拉蒂 -->
+                        {%if behs%}
+                            {% for beh in behs %}
+                        <section class="po">
+                            <header>
+                                <h3>{{beh.beh}}</h3>
+                                <div class="timer" id="timer{{beh.behid}}">
+                                <input name="itemid" type="hidden" value="fwoxla">
+                                <!-- 計時器 -->
+                                   <div class="progessbar">
+                                        <div class="text"></div>
+                                        <div class="bar"></div>
+                                    </div>
+                                    <div class="msg"></div>
+                                    <br> 
+                                </div>
+                            
+                            </header>
+                            <a href="#" class="feature-image"><img class="pic1" src={{beh.pic}} alt="" /></a>
+                            <br>
+                            <p class="point{{beh.behid}}">{{beh.cost}}P/{{beh.time}}min</p>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#{{beh.beh}}" >
+                                兌換
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{beh.beh}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        
+                                        
+                                        
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">{{beh.beh}}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                        <div class="modal-body">
+                                            
+                                            <p><span id="totalp{{beh.behid}}">{{beh.cost}}</span> 點/ <span id="totalt{{beh.behid}}">{{beh.time}}</span>min</p>
+                                            <tr>
+                                                <td>數量</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-primary btn-sm " 
+                                                        onclick="dec{{beh.behid}}()">-</button>
+                                                    <button type="button" class="btn btn-sm"
+                                                     id="count{{beh.behid}}">1</button>
+                                                    <button type="button" class="btn btn-primary btn-sm " 
+                                                        onclick="insc{{beh.behid}}()">+</button>
+                                                        
+                                                </td>
+                                            </tr>
+                                        </div>
+                                    <div class="modal-footer">
+                                        
+                                        <form method="POST" name="npoint">
+                                        {% csrf_token %}
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-dismiss="modal" >取消</button>
+                                            <input name="itemid" type="hidden" value={{beh.cost}}>
+                                            <input name ="itemname" type="hidden" value={{beh.beh}}>
+                                            <input name="itemtime" type="hidden" value={{beh.time}}>
+                                            <input type="submit" class="btn btn-primary" value="兌換" data-bs-dismiss="modal" onclick="change{{beh.behid}}()">
+                                        </form>
+                                        
+                                    </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                        </section>
+                        
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- 我的點數-->
+            <section class="resume-section" id="experience">
+                <div class="resume-section-content">
+                    <h3 class="mb-0">兌換紀錄</h3><br>
+                    <div class="main">
+                        <table>
+                          <thead>
+                            <th>日期</th>
+                            <th>兌換項目</th>
+                            <th>消費點數</th>
+                          </thead>
+                          <tbody>
+                            {%if exchs%}
+                            {% for exch in exchs %}
+                          <tr>
+                            <td>{{exch.edate}}</td>
+                            <td>{{exch.elist}}</td>
+                            <td>{{exch.npoint}}</td>
+                          </tr>
+                          {% endfor %}
+                          {%else%}
+                          <tr>
+                              <td colspan="3">暫時還沒有紀錄</td>
+                          </tr>
+                          {%endif%}
+                          </tbody>
+                        </table>
+                        </div>
+                </div>
+            </section>
+            {% endblock %}
+            <hr class="m-0" />
+            
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{%static 'js/scripts.js'%}"></script>
+        <script>
+           
+            function insc1() {
+                 //瑪莎拉蒂
+                var count=document.getElementById("count1").innerHTML;
+                document.getElementById("count1").innerHTML=parseInt(count)+1;
+                var totalp=document.getElementById("totalp1").innerHTML;
+                document.getElementById("totalp1").innerHTML=parseInt(totalp)+(totalp/count);
+                var totalt=document.getElementById("totalt1").innerHTML;
+                document.getElementById("totalt1").innerHTML=parseInt(totalt)+(parseInt(totalt)/count);
+                var totalp=document.getElementById("totalp1").innerHTML;
+                npoint.itemid.value = document.getElementById("totalp1").innerHTML
+                npoint.itemtime.value = document.getElementById("totalt1").innerHTML
+            }
+
+            function insc2() {
+                var count=document.getElementById("count2").innerHTML;
+                document.getElementById("count2").innerHTML=parseInt(count)+1;
+                var totalp=document.getElementById("totalp2").innerHTML;
+                document.getElementById("totalp2").innerHTML=parseInt(totalp)+(totalp/count);
+                var totalt=document.getElementById("totalt2").innerHTML;
+                document.getElementById("totalt2").innerHTML=parseInt(totalt)+(parseInt(totalt)/count);
+                var totalp=document.getElementById("totalp2").innerHTML;
+                npoint.itemid.value = document.getElementById("totalp2").innerHTML
+                npoint.itemtime.value = document.getElementById("totalt2").innerHTML
+            }
+
+            function insc3() {
+                var count=document.getElementById("count3").innerHTML;
+                document.getElementById("count3").innerHTML=parseInt(count)+1;
+                var totalp=document.getElementById("totalp3").innerHTML;
+                document.getElementById("totalp3").innerHTML=parseInt(totalp)+(totalp/count);
+                var totalt=document.getElementById("totalt3").innerHTML;
+                document.getElementById("totalt3").innerHTML=parseInt(totalt)+(parseInt(totalt)/count);
+                var totalp=document.getElementById("totalp3").innerHTML;
+                npoint.itemid.value = document.getElementById("totalp3").innerHTML
+                npoint.itemtime.value = document.getElementById("totalt3").innerHTML
+            }
+
+            function insc4() {
+                var count=document.getElementById("count4").innerHTML;
+                document.getElementById("count4").innerHTML=parseInt(count)+1;
+                var totalp=document.getElementById("totalp4").innerHTML;
+                document.getElementById("totalp4").innerHTML=parseInt(totalp)+(totalp/count);
+                var totalt=document.getElementById("totalt4").innerHTML;
+                document.getElementById("totalt4").innerHTML=parseInt(totalt)+(parseInt(totalt)/count);
+                var totalp=document.getElementById("totalp4").innerHTML;
+                npoint.itemid.value = document.getElementById("totalp4").innerHTML
+                npoint.itemtime.value = document.getElementById("totalt4").innerHTML
+            }
+                //搭飛機
+
+            function dec1() {
+                //瑪莎拉蒂
+	            var count=document.getElementById("count1").innerHTML;
+	            if(parseInt(count)>=1){
+		            document.getElementById("count1").innerHTML=parseInt(count)-1;		
+	            };
+                var totalp=document.getElementById("totalp1").innerHTML;
+                if(parseInt(totalp)>=1){
+                    document.getElementById("totalp1").innerHTML=parseInt(totalp)-(parseInt(totalp)/count);
+                }
+                else{
+                    document.getElementById("count1").innerHTML=0;
+                }
+               
+                var totalt=document.getElementById("totalt1").innerHTML;
+                if(parseInt(totalt)>0){
+                    document.getElementById("totalt1").innerHTML=parseInt(totalt)-(parseInt(totalt)/count);
+                }
+                else{
+                    document.getElementById("totalt1").innerHTML=0;
+                }
+            }
+
+            function dec2() {
+                var count=document.getElementById("count2").innerHTML;
+	            if(parseInt(count)>=1){
+		            document.getElementById("count2").innerHTML=parseInt(count)-1;		
+	            };
+                var totalp=document.getElementById("totalp2").innerHTML;
+                if(parseInt(totalp)>=1){
+                    document.getElementById("totalp2").innerHTML=parseInt(totalp)-(parseInt(totalp)/count);
+                }
+                else{
+                    document.getElementById("count2").innerHTML=0;
+                }
+               
+                var totalt=document.getElementById("totalt2").innerHTML;
+                if(parseInt(totalt)>0){
+                    document.getElementById("totalt2").innerHTML=parseInt(totalt)-(parseInt(totalt)/count);
+                }
+                else{
+                    document.getElementById("totalt2").innerHTML=0;
+                }
+            }
+
+            function dec3() {
+                var count=document.getElementById("count3").innerHTML;
+	            if(parseInt(count)>=1){
+		            document.getElementById("count3").innerHTML=parseInt(count)-1;		
+	            };
+                var totalp=document.getElementById("totalp3").innerHTML;
+                if(parseInt(totalp)>=1){
+                    document.getElementById("totalp3").innerHTML=parseInt(totalp)-(parseInt(totalp)/count);
+                }
+                else{
+                    document.getElementById("count3").innerHTML=0;
+                }
+               
+                var totalt=document.getElementById("totalt3").innerHTML;
+                if(parseInt(totalt)>0){
+                    document.getElementById("totalt3").innerHTML=parseInt(totalt)-(parseInt(totalt)/count);
+                }
+                else{
+                    document.getElementById("totalt3").innerHTML=0;
+                }
+            }
+
+            function dec4() {
+                var count=document.getElementById("count4").innerHTML;
+	            if(parseInt(count)>=1){
+		            document.getElementById("count4").innerHTML=parseInt(count)-1;		
+	            };
+                var totalp=document.getElementById("totalp4").innerHTML;
+                if(parseInt(totalp)>=1){
+                    document.getElementById("totalp4").innerHTML=parseInt(totalp)-(parseInt(totalp)/count);
+                }
+                else{
+                    document.getElementById("count4").innerHTML=0;
+                }
+               
+                var totalt=document.getElementById("totalt4").innerHTML;
+                if(parseInt(totalt)>0){
+                    document.getElementById("totalt4").innerHTML=parseInt(totalt)-(parseInt(totalt)/count);
+                }
+                else{
+                    document.getElementById("totalt4").innerHTML=0;
+                }
+
+                
+            }
+
+            function change1(){
+                document.getElementById('timer1').style.display="block";
+                start1()
+            }
+            
+            function start1(){
+            var count=document.getElementById("count1").innerHTML;
+           // 起始時間(計時器的啟動時間)。
+            const startTime = new Date().getTime();
+
+            // 目標時間(要倒數幾秒)。
+            const targetSeconds = 60*document.getElementById("totalt1").innerHTML*count;
+
+            // timer.
+            var timer = function (startTime) {
+            // 當前時間。
+            var currentTime = new Date().getTime();
+  
+            // 當前時間 - 起始時間 = 經過時間。(因為不需要毫秒，所以將結果除以1000。)
+            var diffSec = Math.round((currentTime - startTime) / 1000);
+  
+            // 目標時間 - 經過時間 = 剩餘時間。
+            var remainingTime = targetSeconds - diffSec;
+  
+            // update progess.  
+            update(remainingTime);   
+  
+            if (remainingTime == 0) {
+            // stop the timer.
+            clearInterval(timerId);
+    
+            // do anything you want to.
+            $(".msg").text("使用時間結束");
+        } 
+    }
+
+        // start the timer.
+        var timerId = setInterval( function () { timer(startTime); }, 1000);
+
+        // update progess with the timer.
+        function update (seconds) {
+            barRenderer(seconds);
+            textRenderer(seconds);
+        }
+
+        // refresh the bar.
+        function barRenderer (seconds) {
+            var percent = (seconds / targetSeconds) * 100;
+            $(".bar").css("width", percent + "%");
+        }
+
+        // refresh the text of the bar.
+        function textRenderer (seconds) {
+            var sec = seconds % 60;  
+            var min = Math.floor(seconds / 60); 
+
+            /* 兩種作法都可以 */
+
+            min = min.toString().padStart(2, '0');
+            sec = sec.toString().padStart(2, '0');
+  
+            $(".text").text(min + ":" + sec);		
+        }
+    }
+
+    function change2(){
+                document.getElementById('timer2').style.display="block";
+                start2()
+            }
+            
+            function start2(){
+            var count=document.getElementById("count2").innerHTML;
+           // 起始時間(計時器的啟動時間)。
+            const startTime = new Date().getTime();
+
+            // 目標時間(要倒數幾秒)。
+            const targetSeconds = 60*document.getElementById("totalt2").innerHTML*count;
+
+            // timer.
+            var timer = function (startTime) {
+            // 當前時間。
+            var currentTime = new Date().getTime();
+  
+            // 當前時間 - 起始時間 = 經過時間。(因為不需要毫秒，所以將結果除以1000。)
+            var diffSec = Math.round((currentTime - startTime) / 1000);
+  
+            // 目標時間 - 經過時間 = 剩餘時間。
+            var remainingTime = targetSeconds - diffSec;
+  
+            // update progess.  
+            update(remainingTime);   
+  
+            if (remainingTime == 0) {
+            // stop the timer.
+            clearInterval(timerId);
+    
+            // do anything you want to.
+            $(".msg").text("使用時間結束");
+        } 
+    }
+
+        // start the timer.
+        var timerId = setInterval( function () { timer(startTime); }, 1000);
+
+        // update progess with the timer.
+        function update (seconds) {
+            barRenderer(seconds);
+            textRenderer(seconds);
+        }
+
+        // refresh the bar.
+        function barRenderer (seconds) {
+            var percent = (seconds / targetSeconds) * 100;
+            $(".bar").css("width", percent + "%");
+        }
+
+        // refresh the text of the bar.
+        function textRenderer (seconds) {
+            var sec = seconds % 60;  
+            var min = Math.floor(seconds / 60); 
+
+            /* 兩種作法都可以 */
+
+            min = min.toString().padStart(2, '0');
+            sec = sec.toString().padStart(2, '0');
+  
+            $(".text").text(min + ":" + sec);		
+        }
+    }
+
+    function change3(){
+                document.getElementById('timer3').style.display="block";
+                start3()
+            }
+            
+            function start3(){
+            var count=document.getElementById("count3").innerHTML;
+           // 起始時間(計時器的啟動時間)。
+            const startTime = new Date().getTime();
+
+            // 目標時間(要倒數幾秒)。
+            const targetSeconds = 60*document.getElementById("totalt3").innerHTML*count;
+
+            // timer.
+            var timer = function (startTime) {
+            // 當前時間。
+            var currentTime = new Date().getTime();
+  
+            // 當前時間 - 起始時間 = 經過時間。(因為不需要毫秒，所以將結果除以1000。)
+            var diffSec = Math.round((currentTime - startTime) / 1000);
+  
+            // 目標時間 - 經過時間 = 剩餘時間。
+            var remainingTime = targetSeconds - diffSec;
+  
+            // update progess.  
+            update(remainingTime);   
+  
+            if (remainingTime == 0) {
+            // stop the timer.
+            clearInterval(timerId);
+    
+            // do anything you want to.
+            $(".msg").text("使用時間結束");
+        } 
+    }
+
+        // start the timer.
+        var timerId = setInterval( function () { timer(startTime); }, 1000);
+
+        // update progess with the timer.
+        function update (seconds) {
+            barRenderer(seconds);
+            textRenderer(seconds);
+        }
+
+        // refresh the bar.
+        function barRenderer (seconds) {
+            var percent = (seconds / targetSeconds) * 100;
+            $(".bar").css("width", percent + "%");
+        }
+
+        // refresh the text of the bar.
+        function textRenderer (seconds) {
+            var sec = seconds % 60;  
+            var min = Math.floor(seconds / 60); 
+
+            /* 兩種作法都可以 */
+
+            min = min.toString().padStart(2, '0');
+            sec = sec.toString().padStart(2, '0');
+  
+            $(".text").text(min + ":" + sec);		
+        }
+    }
+
+    function change4(){
+                document.getElementById('timer4').style.display="block";
+                start4()
+            }
+            
+            function start4(){
+            var count=document.getElementById("count4").innerHTML;
+           // 起始時間(計時器的啟動時間)。
+            const startTime = new Date().getTime();
+
+            // 目標時間(要倒數幾秒)。
+            const targetSeconds = 60*document.getElementById("totalt4").innerHTML*count;
+
+            // timer.
+            var timer = function (startTime) {
+            // 當前時間。
+            var currentTime = new Date().getTime();
+  
+            // 當前時間 - 起始時間 = 經過時間。(因為不需要毫秒，所以將結果除以1000。)
+            var diffSec = Math.round((currentTime - startTime) / 1000);
+  
+            // 目標時間 - 經過時間 = 剩餘時間。
+            var remainingTime = targetSeconds - diffSec;
+  
+            // update progess.  
+            update(remainingTime);   
+  
+            if (remainingTime == 0) {
+            // stop the timer.
+            clearInterval(timerId);
+    
+            // do anything you want to.
+            $(".msg").text("使用時間結束");
+        } 
+    }
+
+        // start the timer.
+        var timerId = setInterval( function () { timer(startTime); }, 1000);
+
+        // update progess with the timer.
+        function update (seconds) {
+            barRenderer(seconds);
+            textRenderer(seconds);
+        }
+
+        // refresh the bar.
+        function barRenderer (seconds) {
+            var percent = (seconds / targetSeconds) * 100;
+            $(".bar").css("width", percent + "%");
+        }
+
+        // refresh the text of the bar.
+        function textRenderer (seconds) {
+            var sec = seconds % 60;  
+            var min = Math.floor(seconds / 60); 
+
+            /* 兩種作法都可以 */
+
+            min = min.toString().padStart(2, '0');
+            sec = sec.toString().padStart(2, '0');
+  
+            $(".text").text(min + ":" + sec);		
+        }
+    }
+
+
+</script>
+      
+    
+
+    {% if messages %}
+    <script>
+			{% for msg in messages %}
+				alert('{{msg.message}}');
+			{% endfor %}
+        </script>
+	{% endif %}
+
+
+    </body>
+</html>

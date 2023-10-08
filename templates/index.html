@@ -1,0 +1,64 @@
+
+<!DOCTYPE HTML>
+<!--
+	Aerial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+
+<html>
+	<head>
+		<title>首頁</title>
+		{% load static %}
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{%static 'css/index.css'%}" />
+		<noscript><link rel="stylesheet" href="{%static 'css/noscript.css'%}" /></noscript>
+		<script src="https://kit.fontawesome.com/a72c89a734.js" crossorigin="anonymous"></script>
+	</head>
+	<body class="is-preload">
+		<div id="wrapper">
+			<div id="bg"></div>
+			<div id="overlay"></div>
+			<div id="main">
+				
+				<!-- Header -->
+					<header id="header">
+						<h1>碳制郎</h1>
+						<p>愛護地球，從你我做起</p>
+						<nav>
+							<ul>
+								<li><a href="/member" class="icon brands fa-creative-commons-by"><span class="label">會員中心</span></a></li>
+								<li><a href="/point" class="icon brands fa fa-envira"><span class="label">點數兌換</span></a></li>
+								<li><a href="/app" class="icon brands fa fa-app-store-ios"><span class="label">app</span></a></li>
+								<li><a href="/range" class="icon brands fa fa-ge"><span class="label">我的段位</span></a></li>
+								<li><a href="/contact" class="icon solid fa-envelope"><span class="label">問題回報</span></a></li>
+							</ul>
+						</nav>
+					</header>
+					
+					
+					
+
+				<!-- Footer -->
+					<footer id="footer">
+						
+					</footer>
+
+			</div>
+		</div>
+		<script>
+			window.onload = function() { document.body.classList.remove('is-preload'); }
+			window.ontouchmove = function() { return false; }
+			window.onorientationchange = function() { document.body.scrollTop = 0; }
+
+	{% if messages %}
+		{% for msg in messages %}
+			alert('{{msg.message}}')
+		{% endfor %}
+	{% endif %}
+		</script>
+
+
+	</body>
+</html>
